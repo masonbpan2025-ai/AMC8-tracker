@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AMC 8 Timer Tracker</title>
+    <meta name="description" content="Track your time on each AMC 8 problem with a 40-minute countdown. Practice with real AMC 8 problems from Art of Problem Solving.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- ========== LANDING SCREEN ========== -->
+    <div id="landing-screen" class="screen active">
+        <div class="landing-bg-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+        </div>
+        <div class="landing-container">
+            <div class="landing-logo">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="24" cy="24" r="22" stroke="url(#grad1)" stroke-width="3"/>
+                        <path d="M16 32V20L24 14L32 20V32" stroke="url(#grad1)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <circle cx="24" cy="24" r="4" fill="url(#grad1)"/>
+                        <defs>
+                            <linearGradient id="grad1" x1="0" y1="0" x2="48" y2="48">
+                                <stop offset="0%" stop-color="#6366f1"/>
+                                <stop offset="100%" stop-color="#a855f7"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+                <h1 class="landing-title">AMC 8 Timer</h1>
+                <p class="landing-subtitle">Practice smarter. Track your time per problem.</p>
+            </div>
+
+            <div class="input-card">
+                <label for="problem-url" class="input-label">Paste an AMC 8 Problems link</label>
+                <div class="input-wrapper">
+                    <input 
+                        type="url" 
+                        id="problem-url" 
+                        placeholder="https://artofproblemsolving.com/wiki/index.php?title=2024_AMC_8_Problems"
+                        autocomplete="off"
+                    >
+                    <button id="start-btn" class="btn-primary" disabled>
+                        <span class="btn-text">Start Test</span>
+                        <span class="btn-loader" style="display:none;">
+                            <span class="spinner"></span>
+                        </span>
+                    </button>
+                </div>
+                <p class="input-hint">
+                    Example: <code>https://artofproblemsolving.com/wiki/index.php?title=2020_AMC_8_Problems</code>
+                </p>
+                <div id="error-msg" class="error-msg" style="display:none;"></div>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">⏱️</div>
+                    <h3>40-Min Countdown</h3>
+                    <p>Official AMC 8 timing with a sticky clock</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Per-Problem Timer</h3>
+                    <p>See exactly how long each problem takes</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">✅</div>
+                    <h3>Instant Results</h3>
+                    <p>Auto-graded with the official answer key</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== TEST SCREEN ========== -->
+    <div id="test-screen" class="screen">
+        <!-- Sticky Header -->
+        <header id="sticky-header" class="sticky-header">
+            <div class="header-inner">
+                <div class="header-left">
+                    <div class="test-title" id="test-title">AMC 8</div>
+                    <div class="progress-info">
+                        <span id="progress-text">0 / 25</span>
+                        <div class="progress-bar-wrap">
+                            <div class="progress-bar" id="progress-bar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="header-center">
+                    <div class="countdown-display" id="countdown-display">
+                        <div class="countdown-label">TIME REMAINING</div>
+                        <div class="countdown-time" id="countdown-time">40:00</div>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <button id="finish-btn" class="btn-finish">Finish Early</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Problem Navigation -->
+        <nav id="problem-nav" class="problem-nav">
+            <div class="nav-inner" id="nav-inner">
+                <!-- Problem number buttons will be injected here -->
+            </div>
+        </nav>
+
+        <!-- Problems Container -->
+        <main id="problems-container" class="problems-container">
+            <!-- Problem cards will be injected here -->
+        </main>
+    </div>
+
+    <!-- ========== RESULTS SCREEN ========== -->
+    <div id="results-screen" class="screen">
+        <div class="results-container">
+            <div class="results-header">
+                <h1 class="results-title">Test Complete!</h1>
+                <div class="score-display" id="score-display">
+                    <div class="score-circle">
+                        <svg viewBox="0 0 120 120">
+                            <circle cx="60" cy="60" r="54" class="score-ring-bg"/>
+                            <circle cx="60" cy="60" r="54" class="score-ring" id="score-ring"/>
+                        </svg>
+                        <div class="score-number" id="score-number">0</div>
+                        <div class="score-label">/ 25</div>
+                    </div>
+                </div>
+                <div class="stats-row">
+                    <div class="stat-card">
+                        <div class="stat-value" id="stat-correct">0</div>
+                        <div class="stat-label">Correct</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="stat-wrong">0</div>
+                        <div class="stat-label">Wrong</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="stat-skipped">0</div>
+                        <div class="stat-label">Skipped</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="stat-time">00:00</div>
+                        <div class="stat-label">Total Time</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-table-wrap">
+                <table class="results-table" id="results-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Your Answer</th>
+                            <th>Correct Answer</th>
+                            <th>Result</th>
+                            <th>Time Spent</th>
+                        </tr>
+                    </thead>
+                    <tbody id="results-tbody">
+                        <!-- Results rows will be injected here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="results-actions">
+                <button id="retry-btn" class="btn-primary">Try Another Test</button>
+            </div>
+        </div>
+    </div>
+    <!-- ========== CONFIRM MODAL ========== -->
+    <div id="confirm-modal" class="confirm-modal" style="display:none;">
+        <div class="confirm-backdrop"></div>
+        <div class="confirm-dialog">
+            <div class="confirm-icon">⚠️</div>
+            <h2 class="confirm-title">Finish Test Early?</h2>
+            <p class="confirm-text">You still have unanswered problems. Are you sure you want to finish?</p>
+            <div class="confirm-buttons">
+                <button id="confirm-cancel" class="confirm-btn confirm-btn-cancel">Keep Going</button>
+                <button id="confirm-ok" class="confirm-btn confirm-btn-ok">Finish Test</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== CONFIRM MODAL ========== -->
+    <div id="finish-modal" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-icon">⚠️</div>
+            <h2 class="modal-title">Finish Early?</h2>
+            <p class="modal-text">Are you sure you want to end your test now? You won't be able to change your answers after this.</p>
+            <div class="modal-actions">
+                <button id="modal-cancel" class="btn-modal-secondary">Cancel</button>
+                <button id="modal-confirm" class="btn-modal-primary">Finish Test</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
