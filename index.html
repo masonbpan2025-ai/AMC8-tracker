@@ -46,17 +46,30 @@
                         placeholder="https://artofproblemsolving.com/wiki/index.php?title=2024_AMC_8_Problems"
                         autocomplete="off"
                     >
-                    <button id="start-btn" class="btn-primary" disabled>
-                        <span class="btn-text">Start Test</span>
-                        <span class="btn-loader" style="display:none;">
-                            <span class="spinner"></span>
-                        </span>
-                    </button>
                 </div>
-                <p class="input-hint">
+                <p class="input-hint" style="margin-bottom: 20px;">
                     Example: <code>https://artofproblemsolving.com/wiki/index.php?title=2020_AMC_8_Problems</code>
                 </p>
-                <div id="error-msg" class="error-msg" style="display:none;"></div>
+
+                <label for="user-email" class="input-label">Email Report To (optional)</label>
+                <div class="input-wrapper" style="margin-bottom: 24px;">
+                    <input 
+                        type="email" 
+                        id="user-email" 
+                        value="masonbpan2025@gmail.com"
+                        placeholder="Leave blank to skip"
+                        autocomplete="email"
+                    >
+                </div>
+
+                <button id="start-btn" class="btn-primary" style="width: 100%;" disabled>
+                    <span class="btn-text">Start Test</span>
+                    <span class="btn-loader" style="display:none;">
+                        <span class="spinner"></span>
+                    </span>
+                </button>
+
+                <div id="error-msg" class="error-msg" style="display:none; margin-top: 16px;"></div>
             </div>
 
             <div class="features-grid">

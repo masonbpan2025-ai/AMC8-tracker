@@ -24,12 +24,14 @@
     let testFinished = false;
     let totalElapsed = 0;        // total wall-clock seconds used
     let testTitle = '';
+    let userEmail = '';          // email address to send report to
 
     // ── DOM References ──────────────────────────────────────────
     const $landing    = document.getElementById('landing-screen');
     const $test       = document.getElementById('test-screen');
     const $results    = document.getElementById('results-screen');
     const $urlInput   = document.getElementById('problem-url');
+    const $emailInput = document.getElementById('user-email');
     const $startBtn   = document.getElementById('start-btn');
     const $errorMsg   = document.getElementById('error-msg');
     const $countdown  = document.getElementById('countdown-time');
@@ -119,6 +121,8 @@
     async function handleStart() {
         const url = $urlInput.value.trim();
         if (!isValidUrl(url)) return;
+
+        userEmail = $emailInput ? $emailInput.value.trim() : '';
 
         showLoading(true);
         showError('');
@@ -702,6 +706,11 @@
 
         // Switch screen
         switchScreen('results');
+
+        // Send email report if email is provided
+        if (userEmail) {
+            sendReportEmail();
+        }
     }
 
     // ── Build Results ───────────────────────────────────────────
@@ -798,6 +807,70 @@
         if (correct >= 20) {
             launchConfetti();
         }
+    }
+
+    // ── Email Reporting ─────────────────────────────────────────
+    function sendReportEmail() {
+        let correct = 0;
+        let wrong = 0;
+        let skipped = 0;
+        let problemDetails = "";
+
+        problems.forEach((p, i) => {
+            const userAns = userAnswers[i];
+            const correctAns = answerKey[i] || '?';
+            const timeSpent = formatTime(Math.round(problemTimes[i]));
+            
+            let status = "";
+            if (userAns === null) {
+                skipped++;
+                status = "Skipped";
+            } else if (userAns === correctAns) {
+                correct++;
+                status = `Correct (${userAns})`;
+            } else {
+                wrong++;
+                status = `Wrong (Selected: ${userAns}, Correct: ${correctAns})`;
+            }
+
+            problemDetails += `Problem ${p.number}: ${status} - Time: ${timeSpent}\n`;
+        });
+
+        const reportText = `
+AMC 8 Test Report
+
+Test: ${testTitle}
+Score: ${correct} / ${problems.length}
+Correct: ${correct} | Wrong: ${wrong} | Skipped: ${skipped}
+Total Time: ${formatTime(Math.round(totalElapsed))}
+
+Detailed Breakdown:
+-------------------
+${problemDetails}
+        `.trim();
+
+        // Send using FormSubmit.co AJAX API
+        fetch(`https://formsubmit.co/ajax/${userEmail}`, {
+            method: "POST",
+            headers: { 
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+                _subject: `AMC 8 Tracker Report: ${testTitle}`,
+                name: "AMC 8 Tracker",
+                message: reportText,
+                _replyto: userEmail
+            })
+        }).then(response => {
+            if (!response.ok) {
+                console.error("Failed to send email report:", response);
+            } else {
+                console.log("Email report sent successfully (or queued for activation)");
+            }
+        }).catch(err => {
+            console.error("Error sending email:", err);
+        });
     }
 
     // ── Helpers ──────────────────────────────────────────────────
